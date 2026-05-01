@@ -7,50 +7,34 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #f7f6f2;
-    --surface: #ffffff;
-    --border: #e2e0d8;
-    --border-strong: #c8c5bb;
-    --text: #1a1916;
-    --text-muted: #6b6860;
-    --text-hint: #a09d96;
+    --bg: #f7f6f2; --surface: #ffffff; --border: #e2e0d8; --border-strong: #c8c5bb;
+    --text: #1a1916; --text-muted: #6b6860; --text-hint: #a09d96;
     --green-bg: #eaf3de; --green-mid: #C0DD97; --green-text: #27500A;
-    --green-dark-bg: #d4edca; --green-dark-mid: #8FCC6A; --green-dark-text: #1a4008;
+    --amber-bg: #fdf3e0; --amber-mid: #F5C96A; --amber-text: #7A4A00;
     --blue-bg: #e6f1fb; --blue-mid: #B5D4F4; --blue-text: #0C447C;
     --red-bg: #fcebeb; --red-mid: #F7C1C1; --red-text: #791F1F;
-    --amber-bg: #fdf3e0; --amber-mid: #F5C96A; --amber-text: #7A4A00;
     --radius: 8px; --radius-lg: 12px;
   }
-  body {
-    font-family: 'Georgia', serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 24px 20px 48px;
-  }
-  h1 {
-    font-size: 22px; font-weight: normal; letter-spacing: -0.5px;
-    color: var(--text); margin-bottom: 4px;
-  }
-  .subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; font-family: 'Helvetica Neue', sans-serif; }
+  body { font-family: 'Georgia', serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px 20px 48px; }
+  h1 { font-size: 22px; font-weight: normal; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; font-family: 'Helvetica Neue', sans-serif; }
 
-  /* Lock badge */
-  .lock-badge {
+  .sync-status {
     display: inline-flex; align-items: center; gap: 6px;
-    font-size: 11px; padding: 4px 10px;
-    border-radius: 20px; font-family: 'Helvetica Neue', sans-serif;
-    cursor: pointer; border: 0.5px solid; margin-left: 10px;
-    transition: all 0.15s; vertical-align: middle;
+    font-size: 11px; font-family: 'Helvetica Neue', sans-serif;
+    padding: 4px 10px; border-radius: 20px; margin-bottom: 16px;
+    border: 0.5px solid var(--border); background: var(--surface);
   }
-  .lock-badge.locked { background: var(--red-bg); color: var(--red-text); border-color: var(--red-mid); }
-  .lock-badge.unlocked { background: var(--green-bg); color: var(--green-text); border-color: var(--green-mid); }
-  .lock-badge svg { width: 11px; height: 11px; }
+  .sync-status .dot { width: 7px; height: 7px; border-radius: 50%; background: #ccc; }
+  .sync-status.connected .dot { background: #5cb85c; }
+  .sync-status.saving .dot { background: #f0a500; animation: pulse 0.8s infinite; }
+  .sync-status.error .dot { background: #d9534f; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
   .toolbar {
     display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
     padding: 14px 16px; background: var(--surface);
-    border: 0.5px solid var(--border); border-radius: var(--radius-lg);
-    margin-bottom: 14px;
+    border: 0.5px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 14px;
   }
   .toolbar label { font-size: 12px; color: var(--text-muted); font-family: 'Helvetica Neue', sans-serif; }
   .toolbar select, .toolbar input[type="number"] {
@@ -59,179 +43,97 @@
     color: var(--text); height: 34px; font-family: inherit;
   }
   .toolbar-group { display: flex; align-items: center; gap: 8px; }
-
   .btn-group { display: flex; gap: 6px; }
   .btn {
     font-size: 12px; padding: 5px 12px; border-radius: var(--radius);
     border: 0.5px solid var(--border-strong); background: var(--surface);
-    color: var(--text-muted); cursor: pointer; font-family: 'Helvetica Neue', sans-serif;
-    transition: all 0.15s;
+    color: var(--text-muted); cursor: pointer; font-family: 'Helvetica Neue', sans-serif; transition: all 0.15s;
   }
   .btn.active { background: var(--text); color: var(--surface); border-color: var(--text); }
   .btn:hover:not(.active) { background: var(--bg); }
-
   .export-btn {
-    margin-left: auto; font-size: 12px; padding: 6px 14px;
-    border-radius: var(--radius); border: 0.5px solid var(--border-strong);
-    background: var(--surface); color: var(--text); cursor: pointer;
-    font-family: 'Helvetica Neue', sans-serif; transition: all 0.15s;
-    display: flex; align-items: center; gap: 6px;
+    margin-left: auto; font-size: 12px; padding: 6px 14px; border-radius: var(--radius);
+    border: 0.5px solid var(--border-strong); background: var(--surface); color: var(--text);
+    cursor: pointer; font-family: 'Helvetica Neue', sans-serif; display: flex; align-items: center; gap: 6px;
   }
   .export-btn:hover { background: var(--bg); }
 
   .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; font-family: 'Helvetica Neue', sans-serif; }
   .leg-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); }
-  .leg-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  .leg-dot { width: 12px; height: 12px; border-radius: 3px; }
 
-  .stats-bar {
-    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center;
-  }
-  .stat-pill {
-    background: var(--surface); border: 0.5px solid var(--border);
-    border-radius: var(--radius); padding: 6px 14px;
-    font-size: 12px; color: var(--text-muted); font-family: 'Helvetica Neue', sans-serif;
-  }
+  .stats-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+  .stat-pill { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 6px 14px; font-size: 12px; color: var(--text-muted); font-family: 'Helvetica Neue', sans-serif; }
   .stat-pill strong { color: var(--text); font-weight: 600; }
-  .rrhh-badge {
-    display: inline-block; font-size: 10px; padding: 2px 8px;
-    background: var(--blue-bg); color: var(--blue-text);
-    border-radius: 20px; margin-left: 6px; font-weight: 600; font-family: 'Helvetica Neue', sans-serif;
-  }
+  .rrhh-badge { display: inline-block; font-size: 10px; padding: 2px 8px; background: var(--blue-bg); color: var(--blue-text); border-radius: 20px; margin-left: 6px; font-weight: 600; font-family: 'Helvetica Neue', sans-serif; }
 
   .year-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
   @media (max-width: 700px) { .year-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 400px) { .year-grid { grid-template-columns: 1fr; } }
 
-  .month-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px;
-  }
-  .month-name {
-    font-size: 11px; font-weight: 600; color: var(--text-muted);
-    margin-bottom: 8px; text-transform: uppercase; text-align: center;
-    letter-spacing: 0.8px; font-family: 'Helvetica Neue', sans-serif;
-  }
+  .month-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 10px; }
+  .month-name { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; text-align: center; letter-spacing: 0.8px; font-family: 'Helvetica Neue', sans-serif; }
   .day-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
   .day-header { font-size: 9px; color: var(--text-hint); text-align: center; padding: 2px 0; font-family: 'Helvetica Neue', sans-serif; }
-  .day-cell {
-    aspect-ratio: 1; border-radius: 3px; font-size: 9px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: var(--text-muted);
-    border: 0.5px solid transparent; transition: border-color 0.1s;
-    font-family: 'Helvetica Neue', sans-serif; position: relative;
-  }
+  .day-cell { aspect-ratio: 1; border-radius: 3px; font-size: 9px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); border: 0.5px solid transparent; transition: border-color 0.1s; font-family: 'Helvetica Neue', sans-serif; }
   .day-cell:hover { border-color: var(--border-strong); }
   .day-cell.empty { cursor: default; }
   .day-cell.sunday { color: var(--text-hint); }
-  .day-cell.trabajado_dia { background: var(--green-mid); color: var(--green-text); }
+  .day-cell.trabajado_dia   { background: var(--green-mid); color: var(--green-text); }
   .day-cell.trabajado_noche { background: var(--amber-mid); color: var(--amber-text); }
   .day-cell.compensado { background: var(--blue-mid); color: var(--blue-text); }
   .day-cell.incapacidad { background: var(--red-mid); color: var(--red-text); }
+  .day-cell.trabajado_dia::after   { content:'☀'; font-size:6px; position:absolute; bottom:1px; right:1px; line-height:1; }
+  .day-cell.trabajado_noche::after { content:'🌙'; font-size:6px; position:absolute; bottom:1px; right:1px; line-height:1; }
+  .day-cell { position: relative; }
 
-  /* Small icon inside day cell for day/night */
-  .day-cell.trabajado_dia::after { content: '☀'; font-size: 6px; position: absolute; bottom: 1px; right: 1px; line-height: 1; }
-  .day-cell.trabajado_noche::after { content: '🌙'; font-size: 6px; position: absolute; bottom: 1px; right: 1px; line-height: 1; }
+  /* Turno modal */
+  .turno-modal { background: var(--surface); border: 0.5px solid var(--border-strong); border-radius: var(--radius-lg); padding: 24px; width: 340px; max-width: 95vw; }
+  .turno-modal h3 { font-size: 16px; font-weight: normal; margin-bottom: 6px; }
+  .turno-modal p { font-size: 12px; color: var(--text-muted); margin-bottom: 18px; font-family: 'Helvetica Neue', sans-serif; }
+  .turno-form { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+  .turno-form label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px; font-family: 'Helvetica Neue', sans-serif; }
+  .turno-form input[type="date"], .turno-form select { width: 100%; font-size: 13px; padding: 7px 10px; border-radius: var(--radius); border: 0.5px solid var(--border-strong); background: var(--bg); color: var(--text); font-family: inherit; }
+  .turno-scheme { display: flex; gap: 6px; flex-wrap: wrap; }
+  .turno-pill { display: flex; align-items: center; gap: 5px; font-size: 11px; padding: 4px 10px; border-radius: 20px; font-family: 'Helvetica Neue', sans-serif; }
+  .turno-pill.dia   { background: var(--green-bg); color: var(--green-text); border: 0.5px solid var(--green-mid); }
+  .turno-pill.noche { background: var(--amber-bg); color: var(--amber-text); border: 0.5px solid var(--amber-mid); }
+  .turno-pill.desc  { background: var(--bg);       color: var(--text-muted);  border: 0.5px solid var(--border-strong); }
+  .turno-preview { font-size: 11px; color: var(--text-muted); font-family: 'Helvetica Neue', sans-serif; margin-bottom: 4px; }
+  .turno-actions { display: flex; gap: 8px; justify-content: flex-end; }
 
-  /* Modal */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.3); z-index: 999;
-    align-items: center; justify-content: center;
-  }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 999; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--surface); border: 0.5px solid var(--border-strong);
-    border-radius: var(--radius-lg); padding: 22px; width: 300px; max-width: 95vw;
-  }
-  .modal h3 { font-size: 16px; font-weight: normal; margin-bottom: 4px; color: var(--text); }
+  .modal { background: var(--surface); border: 0.5px solid var(--border-strong); border-radius: var(--radius-lg); padding: 22px; width: 300px; max-width: 95vw; }
+  .modal h3 { font-size: 16px; font-weight: normal; margin-bottom: 4px; }
   .modal-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; font-family: 'Helvetica Neue', sans-serif; }
   .modal-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-  .modal-options button {
-    padding: 9px 14px; border-radius: var(--radius); font-size: 13px;
-    border: 0.5px solid var(--border); cursor: pointer; text-align: left;
-    background: var(--bg); color: var(--text); font-family: 'Helvetica Neue', sans-serif;
-    transition: all 0.1s;
-  }
+  .modal-options button { padding: 9px 14px; border-radius: var(--radius); font-size: 13px; border: 0.5px solid var(--border); cursor: pointer; text-align: left; background: var(--bg); color: var(--text); font-family: 'Helvetica Neue', sans-serif; transition: all 0.1s; }
   .modal-options button:hover { border-color: var(--border-strong); }
-  .opt-trabajado_dia { background: var(--green-bg) !important; border-color: var(--green-mid) !important; color: var(--green-text) !important; }
+  .opt-trabajado_dia   { background: var(--green-bg) !important; border-color: var(--green-mid) !important; color: var(--green-text) !important; }
   .opt-trabajado_noche { background: var(--amber-bg) !important; border-color: var(--amber-mid) !important; color: var(--amber-text) !important; }
   .opt-compensado { background: var(--blue-bg) !important; border-color: var(--blue-mid) !important; color: var(--blue-text) !important; }
   .opt-incapacidad { background: var(--red-bg) !important; border-color: var(--red-mid) !important; color: var(--red-text) !important; }
   .modal-footer { display: flex; justify-content: flex-end; }
-  .modal-footer button {
-    font-size: 12px; padding: 6px 14px; border-radius: var(--radius);
-    border: 0.5px solid var(--border); background: var(--bg);
-    color: var(--text-muted); cursor: pointer; font-family: 'Helvetica Neue', sans-serif;
-  }
+  .modal-footer button { font-size: 12px; padding: 6px 14px; border-radius: var(--radius); border: 0.5px solid var(--border); background: var(--bg); color: var(--text-muted); cursor: pointer; font-family: 'Helvetica Neue', sans-serif; }
 
-  /* Password modal */
-  .pass-modal {
-    background: var(--surface); border: 0.5px solid var(--border-strong);
-    border-radius: var(--radius-lg); padding: 28px 24px; width: 300px; max-width: 95vw;
-    text-align: center;
-  }
-  .pass-modal .lock-icon { font-size: 32px; margin-bottom: 12px; }
-  .pass-modal h3 { font-size: 16px; font-weight: normal; margin-bottom: 6px; color: var(--text); }
-  .pass-modal p { font-size: 12px; color: var(--text-muted); margin-bottom: 18px; font-family: 'Helvetica Neue', sans-serif; }
-  .pass-input-wrap { position: relative; margin-bottom: 12px; }
-  .pass-input-wrap input {
-    width: 100%; font-size: 22px; letter-spacing: 8px; text-align: center;
-    padding: 10px 14px; border-radius: var(--radius);
-    border: 0.5px solid var(--border-strong); background: var(--bg);
-    color: var(--text); font-family: 'Helvetica Neue', sans-serif;
-    outline: none;
-  }
-  .pass-input-wrap input:focus { border-color: var(--text); }
-  .pass-error { font-size: 12px; color: var(--red-text); font-family: 'Helvetica Neue', sans-serif; margin-bottom: 10px; min-height: 16px; }
-  .pass-actions { display: flex; gap: 8px; justify-content: center; }
-  .pass-actions .btn-primary {
-    font-size: 13px; padding: 7px 20px; border-radius: var(--radius);
-    background: var(--text); color: var(--surface); border: none; cursor: pointer;
-    font-family: 'Helvetica Neue', sans-serif;
-  }
-  .pass-actions .btn-sec {
-    font-size: 13px; padding: 7px 16px; border-radius: var(--radius);
-    background: var(--bg); color: var(--text-muted); border: 0.5px solid var(--border);
-    cursor: pointer; font-family: 'Helvetica Neue', sans-serif;
-  }
-
-  /* Export modal */
-  .export-modal {
-    background: var(--surface); border: 0.5px solid var(--border-strong);
-    border-radius: var(--radius-lg); padding: 22px; width: 360px; max-width: 95vw;
-  }
+  .export-modal { background: var(--surface); border: 0.5px solid var(--border-strong); border-radius: var(--radius-lg); padding: 22px; width: 360px; max-width: 95vw; }
   .export-modal h3 { font-size: 16px; font-weight: normal; margin-bottom: 16px; }
   .export-form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
   .export-form label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: block; font-family: 'Helvetica Neue', sans-serif; }
   .export-form select { width: 100%; font-size: 13px; padding: 7px 10px; border-radius: var(--radius); border: 0.5px solid var(--border-strong); background: var(--bg); color: var(--text); }
-  .export-actions { display: flex; gap: 8px; justify-content: flex-end; }
-  .export-actions .btn-primary {
-    font-size: 13px; padding: 7px 16px; border-radius: var(--radius);
-    background: var(--text); color: var(--surface); border: none; cursor: pointer;
-    font-family: 'Helvetica Neue', sans-serif;
-  }
-  .export-actions .btn-sec {
-    font-size: 13px; padding: 7px 16px; border-radius: var(--radius);
-    background: var(--bg); color: var(--text-muted); border: 0.5px solid var(--border);
-    cursor: pointer; font-family: 'Helvetica Neue', sans-serif;
-  }
+  .exp-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .btn-primary { font-size: 13px; padding: 7px 16px; border-radius: var(--radius); background: var(--text); color: var(--surface); border: none; cursor: pointer; font-family: 'Helvetica Neue', sans-serif; }
+  .btn-sec { font-size: 13px; padding: 7px 16px; border-radius: var(--radius); background: var(--bg); color: var(--text-muted); border: 0.5px solid var(--border); cursor: pointer; font-family: 'Helvetica Neue', sans-serif; }
 
-  /* Print / export preview */
-  #previewArea {
-    display: none; margin-top: 28px;
-    background: var(--surface); border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg); padding: 20px;
-  }
+  #previewArea { display: none; margin-top: 28px; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px; }
   #previewArea h2 { font-size: 16px; font-weight: normal; margin-bottom: 4px; }
-  #previewArea .preview-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; font-family: 'Helvetica Neue', sans-serif; }
+  .preview-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; font-family: 'Helvetica Neue', sans-serif; }
   .export-table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: 'Helvetica Neue', sans-serif; }
   .export-table th { text-align: left; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 6px 8px; border-bottom: 0.5px solid var(--border); }
   .export-table td { padding: 6px 8px; border-bottom: 0.5px solid var(--border); color: var(--text); }
   .export-table tr:last-child td { border-bottom: none; }
   .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; }
-  .badge-trabajado_dia { background: var(--green-bg); color: var(--green-text); }
+  .badge-trabajado_dia   { background: var(--green-bg); color: var(--green-text); }
   .badge-trabajado_noche { background: var(--amber-bg); color: var(--amber-text); }
   .badge-compensado { background: var(--blue-bg); color: var(--blue-text); }
   .badge-incapacidad { background: var(--red-bg); color: var(--red-text); }
@@ -239,25 +141,27 @@
   .sum-card { background: var(--bg); border-radius: var(--radius); padding: 10px 16px; font-family: 'Helvetica Neue', sans-serif; }
   .sum-card .sum-label { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
   .sum-card .sum-val { font-size: 20px; font-weight: 600; color: var(--text); }
-  .export-actions-bar { display: flex; gap: 8px; margin-top: 16px; }
-  .copy-btn, .print-btn {
-    font-size: 12px; padding: 6px 14px; border-radius: var(--radius);
-    border: 0.5px solid var(--border-strong); background: var(--bg);
-    color: var(--text); cursor: pointer; font-family: 'Helvetica Neue', sans-serif;
-  }
+  .exp-actions-bar { display: flex; gap: 8px; margin-top: 16px; }
+  .copy-btn, .print-btn { font-size: 12px; padding: 6px 14px; border-radius: var(--radius); border: 0.5px solid var(--border-strong); background: var(--bg); color: var(--text); cursor: pointer; font-family: 'Helvetica Neue', sans-serif; }
   .print-btn { background: var(--text); color: var(--surface); border-color: var(--text); }
+
+  @media print {
+    .toolbar, .legend, .stats-bar, .export-btn, .exp-actions-bar, .sync-status { display: none !important; }
+    body { padding: 12px; background: white; }
+    #yearGrid { display: none; }
+    #previewArea { display: block !important; border: none; padding: 0; }
+  }
 </style>
 </head>
 <body>
 
-<h1>Calendario de asistencia <span class="lock-badge locked" id="lockBadge" onclick="handleLockClick()">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="lockIcon">
-    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-  </svg>
-  <span id="lockLabel">Bloqueado</span>
-</span></h1>
-<p class="subtitle">Equipo de laboratorio — Datos guardados en este navegador</p>
+<h1>Calendario de asistencia</h1>
+<p class="subtitle">Equipo de laboratorio</p>
+
+<div class="sync-status" id="syncStatus">
+  <div class="dot"></div>
+  <span id="syncText">Conectando a Firebase...</span>
+</div>
 
 <div class="toolbar">
   <div class="toolbar-group">
@@ -275,6 +179,7 @@
       <button class="btn" data-group="rrhh">Solo RRHH</button>
     </div>
   </div>
+  <button class="export-btn" id="openTurnoBtn">⚡ Generar turno</button>
   <button class="export-btn" id="openExportBtn">&#8681; Exportar</button>
 </div>
 
@@ -293,43 +198,61 @@
   <p class="preview-sub" id="previewSub"></p>
   <table class="export-table" id="previewTable"></table>
   <div class="summary-row" id="previewSummary"></div>
-  <div class="export-actions-bar">
+  <div class="exp-actions-bar">
     <button class="copy-btn" id="copyBtn">Copiar texto</button>
     <button class="print-btn" onclick="window.print()">Imprimir / PDF</button>
     <button class="copy-btn" id="closePreviewBtn">Cerrar</button>
   </div>
 </div>
 
-<!-- Day edit modal -->
+<!-- Day modal -->
 <div class="modal-overlay" id="dayModal">
   <div class="modal">
     <h3 id="modalTitle">Marcar día</h3>
     <p class="modal-sub" id="modalSub"></p>
     <div class="modal-options" id="modalOptions"></div>
-    <div class="modal-footer">
-      <button id="modalCancel">Cancelar</button>
+    <div class="modal-footer"><button id="modalCancel">Cancelar</button></div>
+  </div>
+</div>
+
+<!-- Turno generator modal -->
+<div class="modal-overlay" id="turnoModal">
+  <div class="turno-modal">
+    <h3>⚡ Generar turno automático</h3>
+    <p>Llena el calendario con el ciclo: <strong>10 días</strong> ☀ + <strong>10 noches</strong> 🌙 + <strong>10 descansos</strong> a partir de la fecha que elijas.</p>
+    <div class="turno-form">
+      <div>
+        <label>Colaborador</label>
+        <select id="turnoEmp"></select>
+      </div>
+      <div>
+        <label>Fecha de inicio del ciclo</label>
+        <input type="date" id="turnoFecha">
+      </div>
+      <div>
+        <label>¿Qué hacer si el día ya tiene una marca?</label>
+        <select id="turnoOverwrite">
+          <option value="skip">Conservar lo que ya existe</option>
+          <option value="overwrite">Sobreescribir todo</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div class="turno-preview">El ciclo se aplicará así:</div>
+      <div class="turno-scheme">
+        <span class="turno-pill dia">☀ Días 1–10 → Día</span>
+        <span class="turno-pill noche">🌙 Días 11–20 → Noche</span>
+        <span class="turno-pill desc">💤 Días 21–30 → Descanso</span>
+      </div>
+    </div>
+    <div class="turno-actions">
+      <button class="btn-sec" id="turnoCancel">Cancelar</button>
+      <button class="btn-primary" id="turnoGenerate">Generar</button>
     </div>
   </div>
 </div>
 
-<!-- Password modal -->
-<div class="modal-overlay" id="passModal">
-  <div class="pass-modal">
-    <div class="lock-icon">🔒</div>
-    <h3 id="passModalTitle">Acceso protegido</h3>
-    <p id="passModalDesc">Ingresa la contraseña para realizar modificaciones.</p>
-    <div class="pass-input-wrap">
-      <input type="password" id="passInput" maxlength="10" placeholder="••••" autocomplete="off">
-    </div>
-    <div class="pass-error" id="passError"></div>
-    <div class="pass-actions">
-      <button class="btn-sec" onclick="closeModal('passModal')">Cancelar</button>
-      <button class="btn-primary" onclick="checkPassword()">Entrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Export options modal -->
+<!-- Export modal -->
 <div class="modal-overlay" id="exportModal">
   <div class="export-modal">
     <h3>Exportar datos</h3>
@@ -342,367 +265,286 @@
         <label>Período</label>
         <select id="expPeriod">
           <option value="anual">Año completo</option>
-          <option value="0">Enero</option>
-          <option value="1">Febrero</option>
-          <option value="2">Marzo</option>
-          <option value="3">Abril</option>
-          <option value="4">Mayo</option>
-          <option value="5">Junio</option>
-          <option value="6">Julio</option>
-          <option value="7">Agosto</option>
-          <option value="8">Septiembre</option>
-          <option value="9">Octubre</option>
-          <option value="10">Noviembre</option>
-          <option value="11">Diciembre</option>
+          <option value="0">Enero</option><option value="1">Febrero</option>
+          <option value="2">Marzo</option><option value="3">Abril</option>
+          <option value="4">Mayo</option><option value="5">Junio</option>
+          <option value="6">Julio</option><option value="7">Agosto</option>
+          <option value="8">Septiembre</option><option value="9">Octubre</option>
+          <option value="10">Noviembre</option><option value="11">Diciembre</option>
         </select>
       </div>
     </div>
-    <div class="export-actions">
+    <div class="exp-actions">
       <button class="btn-sec" id="expCancel">Cancelar</button>
       <button class="btn-primary" id="expGenerate">Ver reporte</button>
     </div>
   </div>
 </div>
 
-<script>
-const EMPLOYEES = [
-  { id: 'sergio', name: 'Sergio', rrhh: false },
-  { id: 'jairo', name: 'Jairo', rrhh: false },
-  { id: 'nino', name: 'Niño', rrhh: true },
-  { id: 'fraydilenis', name: 'Fraydilenis', rrhh: true },
-  { id: 'joseth', name: 'Joseth', rrhh: true },
-];
-const TIPOS = [
-  { key: 'trabajado_dia',   label: '☀ Día trabajado — Día',   cls: 'opt-trabajado_dia' },
-  { key: 'trabajado_noche', label: '🌙 Día trabajado — Noche', cls: 'opt-trabajado_noche' },
-  { key: 'compensado',      label: 'Compensado',               cls: 'opt-compensado' },
-  { key: 'incapacidad',     label: 'Incapacidad',              cls: 'opt-incapacidad' },
-];
-const MONTH_NAMES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-const DAY_LABELS = ['L','M','X','J','V','S','D'];
-const TIPO_LABEL = {
-  trabajado_dia: 'Trabajado Día',
-  trabajado_noche: 'Trabajado Noche',
-  compensado: 'Compensado',
-  incapacidad: 'Incapacidad'
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAN8FbNwN8wpC5zbpItK_34m5JoY-K1-Cg",
+  authDomain: "calendario-laboratorio-de552.firebaseapp.com",
+  databaseURL: "https://calendario-laboratorio-de552-default-rtdb.firebaseio.com",
+  projectId: "calendario-laboratorio-de552",
+  storageBucket: "calendario-laboratorio-de552.firebasestorage.app",
+  messagingSenderId: "910170311333",
+  appId: "1:910170311333:web:02b158fbb724d18a565b4c"
 };
 
-const PASSWORD = '1508';
-let isUnlocked = false;
-let pendingAction = null; // callback to run after unlock
+const fbApp = initializeApp(firebaseConfig);
+const db = getDatabase(fbApp);
 
+// ── Constants ──────────────────────────────────────────────────
+const EMPLOYEES = [
+  { id: 'sergio',      name: 'Sergio',      rrhh: false },
+  { id: 'jairo',       name: 'Jairo',       rrhh: false },
+  { id: 'nino',        name: 'Niño',        rrhh: true  },
+  { id: 'fraydilenis', name: 'Fraydilenis', rrhh: true  },
+  { id: 'joseth',      name: 'Joseth',      rrhh: true  },
+];
+const TIPOS = [
+  { key: 'trabajado_dia',   label: '☀ Día trabajado — Día',   cls: 'opt-trabajado_dia'   },
+  { key: 'trabajado_noche', label: '🌙 Día trabajado — Noche', cls: 'opt-trabajado_noche' },
+  { key: 'compensado',      label: 'Compensado',               cls: 'opt-compensado'      },
+  { key: 'incapacidad',     label: 'Incapacidad',              cls: 'opt-incapacidad'     },
+];
+const MONTHS  = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DAYS_LB = ['L','M','X','J','V','S','D'];
+const TIPO_LB = { trabajado_dia:'Trab. Día ☀', trabajado_noche:'Trab. Noche 🌙', compensado:'Compensado', incapacidad:'Incapacidad' };
+
+let data       = {};
 let currentEmp = EMPLOYEES[0].id;
-let currentYear = 2025;
-let groupFilter = 'todos';
-let modalCtx = null;
+let currentYear= 2025;
+let groupFilter= 'todos';
 
-// Storage helpers
-function storageKey() { return 'cal_lab_data'; }
-function loadData() {
-  try { return JSON.parse(localStorage.getItem(storageKey()) || '{}'); } catch { return {}; }
-}
-function saveData(d) { localStorage.setItem(storageKey(), JSON.stringify(d)); }
-let data = loadData();
-
-function dkey(emp, y, m, d) { return `${emp}__${y}_${m}_${d}`; }
-function getDay(emp, y, m, d) { return data[dkey(emp,y,m,d)] || null; }
-function setDay(emp, y, m, d, tipo) {
-  if (tipo) data[dkey(emp,y,m,d)] = tipo; else delete data[dkey(emp,y,m,d)];
-  saveData(data); render();
-}
-function getDaysInMonth(y, m) { return new Date(y, m+1, 0).getDate(); }
-function getFirstWeekday(y, m) { let d = new Date(y, m, 1).getDay(); return d === 0 ? 6 : d - 1; }
-
-// ---- Password / lock logic ----
-function updateLockUI() {
-  const badge = document.getElementById('lockBadge');
-  const label = document.getElementById('lockLabel');
-  const icon  = document.getElementById('lockIcon');
-  if (isUnlocked) {
-    badge.className = 'lock-badge unlocked';
-    label.textContent = 'Desbloqueado';
-    icon.innerHTML = `<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path>`;
-  } else {
-    badge.className = 'lock-badge locked';
-    label.textContent = 'Bloqueado';
-    icon.innerHTML = `<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>`;
-  }
+// ── Status ─────────────────────────────────────────────────────
+function setStatus(state, text) {
+  document.getElementById('syncStatus').className = 'sync-status ' + state;
+  document.getElementById('syncText').textContent = text;
 }
 
-function handleLockClick() {
-  if (isUnlocked) {
-    // Lock again
-    isUnlocked = false;
-    updateLockUI();
-  } else {
-    // Request unlock with no pending action (just unlock)
-    pendingAction = null;
-    openPasswordModal('Desbloquear edición', 'Ingresa la contraseña para poder hacer modificaciones.');
-  }
-}
-
-function requireUnlock(callback) {
-  if (isUnlocked) {
-    callback();
-  } else {
-    pendingAction = callback;
-    openPasswordModal('Acceso protegido', 'Ingresa la contraseña para realizar modificaciones.');
-  }
-}
-
-function openPasswordModal(title, desc) {
-  document.getElementById('passModalTitle').textContent = title;
-  document.getElementById('passModalDesc').textContent = desc;
-  document.getElementById('passInput').value = '';
-  document.getElementById('passError').textContent = '';
-  openModal('passModal');
-  setTimeout(() => document.getElementById('passInput').focus(), 100);
-}
-
-function checkPassword() {
-  const val = document.getElementById('passInput').value;
-  if (val === PASSWORD) {
-    isUnlocked = true;
-    updateLockUI();
-    closeModal('passModal');
-    if (pendingAction) {
-      const action = pendingAction;
-      pendingAction = null;
-      action();
-    }
-  } else {
-    document.getElementById('passError').textContent = 'Contraseña incorrecta. Intenta de nuevo.';
-    document.getElementById('passInput').value = '';
-    document.getElementById('passInput').focus();
-  }
-}
-
-// Allow Enter key in password input
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('passInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') checkPassword();
-  });
+// ── Firebase listener ─────────────────────────────────────────
+onValue(ref(db, 'asistencia'), snap => {
+  data = snap.val() || {};
+  setStatus('connected', 'Sincronizado con Firebase ✓');
+  render();
+}, err => {
+  setStatus('error', 'Error de conexión — ' + err.message);
 });
 
-// ---- Calendar ----
-function buildEmpSelect(selectId, group) {
-  const sel = document.getElementById(selectId);
+// ── Helpers ────────────────────────────────────────────────────
+const dkey = (emp,y,m,d) => `${emp}__${y}_${m}_${d}`;
+const getDay = (emp,y,m,d) => data[dkey(emp,y,m,d)] || null;
+const daysInMonth = (y,m) => new Date(y,m+1,0).getDate();
+const firstWd     = (y,m) => { let d=new Date(y,m,1).getDay(); return d===0?6:d-1; };
+
+async function setDay(emp,y,m,d,tipo) {
+  setStatus('saving','Guardando...');
+  try {
+    await set(ref(db, `asistencia/${dkey(emp,y,m,d)}`), tipo || null);
+  } catch(e) { setStatus('error','Error al guardar'); }
+}
+
+// ── Build employee selects ─────────────────────────────────────
+function buildEmpSelect(id) {
+  const sel = document.getElementById(id);
+  const prev = sel.value || currentEmp;
   sel.innerHTML = '';
-  const visible = group === 'rrhh' ? EMPLOYEES.filter(e => e.rrhh) : EMPLOYEES;
-  visible.forEach(e => {
-    const opt = document.createElement('option');
-    opt.value = e.id;
-    opt.textContent = e.name + (e.rrhh ? ' ★' : '');
-    if (e.id === currentEmp) opt.selected = true;
-    sel.appendChild(opt);
+  const list = groupFilter==='rrhh' ? EMPLOYEES.filter(e=>e.rrhh) : EMPLOYEES;
+  list.forEach(e => {
+    const o = document.createElement('option');
+    o.value = e.id;
+    o.textContent = e.name + (e.rrhh?' ★':'');
+    sel.appendChild(o);
   });
-  if (!visible.find(e => e.id === currentEmp)) {
-    currentEmp = visible[0].id;
-    sel.value = currentEmp;
-  }
+  const found = list.find(e=>e.id===prev);
+  currentEmp = found ? prev : list[0].id;
+  sel.value = currentEmp;
 }
 
+// ── Stats ──────────────────────────────────────────────────────
 function renderStats() {
-  const counts = { trabajado_dia: 0, trabajado_noche: 0, compensado: 0, incapacidad: 0 };
-  for (let m = 0; m < 12; m++) {
-    for (let d = 1; d <= getDaysInMonth(currentYear, m); d++) {
-      const t = getDay(currentEmp, currentYear, m, d);
-      if (t && counts[t] !== undefined) counts[t]++;
-    }
-  }
-  const emp = EMPLOYEES.find(e => e.id === currentEmp);
-  const total = counts.trabajado_dia + counts.trabajado_noche + counts.compensado + counts.incapacidad;
+  const c = {trabajado_dia:0, trabajado_noche:0, compensado:0, incapacidad:0};
+  for (let m=0;m<12;m++) for (let d=1;d<=daysInMonth(currentYear,m);d++) { const t=getDay(currentEmp,currentYear,m,d); if(t&&c[t]!==undefined) c[t]++; }
+  const emp = EMPLOYEES.find(e=>e.id===currentEmp);
+  const total = c.trabajado_dia+c.trabajado_noche+c.compensado+c.incapacidad;
   document.getElementById('statsBar').innerHTML = `
-    <div class="stat-pill"><strong>${emp.name}</strong>${emp.rrhh ? '<span class="rrhh-badge">Grupo RRHH</span>' : ''}</div>
-    <div class="stat-pill">Trabajados Día ☀: <strong>${counts.trabajado_dia}</strong></div>
-    <div class="stat-pill">Trabajados Noche 🌙: <strong>${counts.trabajado_noche}</strong></div>
-    <div class="stat-pill">Compensados: <strong>${counts.compensado}</strong></div>
-    <div class="stat-pill">Incapacidades: <strong>${counts.incapacidad}</strong></div>
-    <div class="stat-pill">Total registrados: <strong>${total}</strong></div>
-  `;
+    <div class="stat-pill"><strong>${emp.name}</strong>${emp.rrhh?'<span class="rrhh-badge">Grupo RRHH</span>':''}</div>
+    <div class="stat-pill">Trab. Día ☀: <strong>${c.trabajado_dia}</strong></div>
+    <div class="stat-pill">Trab. Noche 🌙: <strong>${c.trabajado_noche}</strong></div>
+    <div class="stat-pill">Compensados: <strong>${c.compensado}</strong></div>
+    <div class="stat-pill">Incapacidades: <strong>${c.incapacidad}</strong></div>
+    <div class="stat-pill">Total: <strong>${total}</strong></div>`;
 }
 
+// ── Calendar ───────────────────────────────────────────────────
 function renderCalendar() {
-  const grid = document.getElementById('yearGrid');
-  grid.innerHTML = '';
-  for (let m = 0; m < 12; m++) {
-    const card = document.createElement('div');
-    card.className = 'month-card';
-    const title = document.createElement('div');
-    title.className = 'month-name';
-    title.textContent = MONTH_NAMES[m];
-    card.appendChild(title);
-    const dg = document.createElement('div');
-    dg.className = 'day-grid';
-    DAY_LABELS.forEach(l => { const h = document.createElement('div'); h.className = 'day-header'; h.textContent = l; dg.appendChild(h); });
-    const firstWd = getFirstWeekday(currentYear, m);
-    for (let i = 0; i < firstWd; i++) { const e = document.createElement('div'); e.className = 'day-cell empty'; dg.appendChild(e); }
-    for (let d = 1; d <= getDaysInMonth(currentYear, m); d++) {
-      const cell = document.createElement('div');
-      cell.className = 'day-cell';
-      if ((firstWd + d - 1) % 7 === 6) cell.classList.add('sunday');
-      const tipo = getDay(currentEmp, currentYear, m, d);
-      if (tipo) cell.classList.add(tipo);
-      cell.textContent = d;
-      const _m = m, _d = d;
-      cell.addEventListener('click', () => {
-        requireUnlock(() => openDayModal(_m, _d, tipo));
-      });
+  const grid = document.getElementById('yearGrid'); grid.innerHTML='';
+  for (let m=0;m<12;m++) {
+    const card=document.createElement('div'); card.className='month-card';
+    const title=document.createElement('div'); title.className='month-name'; title.textContent=MONTHS[m]; card.appendChild(title);
+    const dg=document.createElement('div'); dg.className='day-grid';
+    DAYS_LB.forEach(l=>{const h=document.createElement('div');h.className='day-header';h.textContent=l;dg.appendChild(h);});
+    for(let i=0;i<firstWd(currentYear,m);i++){const e=document.createElement('div');e.className='day-cell empty';dg.appendChild(e);}
+    for(let d=1;d<=daysInMonth(currentYear,m);d++){
+      const cell=document.createElement('div'); cell.className='day-cell';
+      if((firstWd(currentYear,m)+d-1)%7===6) cell.classList.add('sunday');
+      const tipo=getDay(currentEmp,currentYear,m,d);
+      if(tipo) cell.classList.add(tipo);
+      cell.textContent=d;
+      const _m=m,_d=d;
+      cell.addEventListener('click',()=>openDayModal(_m,_d,tipo));
       dg.appendChild(cell);
     }
-    card.appendChild(dg);
-    grid.appendChild(card);
+    card.appendChild(dg); grid.appendChild(card);
   }
 }
 
-function render() {
-  buildEmpSelect('empSelect', groupFilter);
-  renderStats();
-  renderCalendar();
-}
+function render() { buildEmpSelect('empSelect'); renderStats(); renderCalendar(); }
 
-// Day modal
-function openDayModal(m, d, current) {
-  modalCtx = { m, d };
-  document.getElementById('modalTitle').textContent = `${d} de ${MONTH_NAMES[m]} ${currentYear}`;
-  document.getElementById('modalSub').textContent = EMPLOYEES.find(e => e.id === currentEmp).name;
-  const opts = document.getElementById('modalOptions');
-  opts.innerHTML = '';
-  TIPOS.forEach(t => {
-    const btn = document.createElement('button');
-    btn.textContent = t.label;
-    if (current === t.key) btn.classList.add(t.cls);
-    btn.addEventListener('click', () => { setDay(currentEmp, currentYear, m, d, t.key); closeModal('dayModal'); });
+// ── Day modal ──────────────────────────────────────────────────
+function openDayModal(m,d,current) {
+  document.getElementById('modalTitle').textContent=`${d} de ${MONTHS[m]} ${currentYear}`;
+  document.getElementById('modalSub').textContent=EMPLOYEES.find(e=>e.id===currentEmp).name;
+  const opts=document.getElementById('modalOptions'); opts.innerHTML='';
+  TIPOS.forEach(t=>{
+    const btn=document.createElement('button'); btn.textContent=t.label;
+    if(current===t.key) btn.classList.add(t.cls);
+    btn.addEventListener('click',()=>{ setDay(currentEmp,currentYear,m,d,t.key); closeModal('dayModal'); });
     opts.appendChild(btn);
   });
-  if (current) {
-    const clr = document.createElement('button');
-    clr.textContent = 'Quitar marca';
-    clr.addEventListener('click', () => { setDay(currentEmp, currentYear, m, d, null); closeModal('dayModal'); });
+  if(current){
+    const clr=document.createElement('button'); clr.textContent='Quitar marca';
+    clr.addEventListener('click',()=>{ setDay(currentEmp,currentYear,m,d,null); closeModal('dayModal'); });
     opts.appendChild(clr);
   }
   openModal('dayModal');
 }
 
-// Export modal
-document.getElementById('openExportBtn').addEventListener('click', () => {
-  buildEmpSelect('expEmp', 'todos');
-  openModal('exportModal');
-});
-document.getElementById('expCancel').addEventListener('click', () => closeModal('exportModal'));
-document.getElementById('expGenerate').addEventListener('click', generateExport);
-
-function generateExport() {
-  const empId = document.getElementById('expEmp').value;
-  const period = document.getElementById('expPeriod').value;
-  const emp = EMPLOYEES.find(e => e.id === empId);
+// ── Export ─────────────────────────────────────────────────────
+document.getElementById('openExportBtn').addEventListener('click',()=>{ buildEmpSelect('expEmp'); openModal('exportModal'); });
+document.getElementById('expCancel').addEventListener('click',()=>closeModal('exportModal'));
+document.getElementById('expGenerate').addEventListener('click',()=>{
+  const empId=document.getElementById('expEmp').value;
+  const period=document.getElementById('expPeriod').value;
+  const emp=EMPLOYEES.find(e=>e.id===empId);
   closeModal('exportModal');
-
-  let months = period === 'anual' ? Array.from({length:12},(_,i)=>i) : [parseInt(period)];
-  const rows = [];
-  months.forEach(m => {
-    for (let d = 1; d <= getDaysInMonth(currentYear, m); d++) {
-      const tipo = getDay(empId, currentYear, m, d);
-      if (tipo) rows.push({ m, d, tipo });
-    }
-  });
-
-  const periodLabel = period === 'anual' ? `Año ${currentYear}` : `${MONTH_NAMES[parseInt(period)]} ${currentYear}`;
-  document.getElementById('previewTitle').textContent = `Reporte: ${emp.name}`;
-  document.getElementById('previewSub').textContent = `${periodLabel} ${emp.rrhh ? '· Grupo RRHH' : ''}`;
-
-  const table = document.getElementById('previewTable');
-  if (rows.length === 0) {
-    table.innerHTML = '<tr><td style="color:#888;padding:12px 0">Sin días registrados para este período.</td></tr>';
-  } else {
-    table.innerHTML = `
-      <thead><tr>
-        <th>Fecha</th><th>Día</th><th>Tipo</th>
-      </tr></thead>
-      <tbody>
-        ${rows.map(r => {
-          const date = new Date(currentYear, r.m, r.d);
-          const dayName = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][date.getDay()];
-          return `<tr>
-            <td>${r.d} de ${MONTH_NAMES[r.m]}</td>
-            <td style="text-transform:capitalize">${dayName}</td>
-            <td><span class="badge badge-${r.tipo}">${TIPO_LABEL[r.tipo]}</span></td>
-          </tr>`;
-        }).join('')}
+  const months=period==='anual'?Array.from({length:12},(_,i)=>i):[parseInt(period)];
+  const rows=[];
+  months.forEach(m=>{ for(let d=1;d<=daysInMonth(currentYear,m);d++){ const t=getDay(empId,currentYear,m,d); if(t) rows.push({m,d,tipo:t}); } });
+  const periodLabel=period==='anual'?`Año ${currentYear}`:`${MONTHS[parseInt(period)]} ${currentYear}`;
+  document.getElementById('previewTitle').textContent=`Reporte: ${emp.name}`;
+  document.getElementById('previewSub').textContent=`${periodLabel}${emp.rrhh?' · Grupo RRHH':''}`;
+  const table=document.getElementById('previewTable');
+  if(!rows.length){ table.innerHTML='<tr><td style="color:#888;padding:12px 0">Sin días registrados para este período.</td></tr>'; }
+  else {
+    table.innerHTML=`<thead><tr><th>Fecha</th><th>Día</th><th>Tipo</th></tr></thead><tbody>
+      ${rows.map(r=>{ const dn=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][new Date(currentYear,r.m,r.d).getDay()];
+        return `<tr><td>${r.d} de ${MONTHS[r.m]}</td><td style="text-transform:capitalize">${dn}</td><td><span class="badge badge-${r.tipo}">${TIPO_LB[r.tipo]}</span></td></tr>`; }).join('')}
       </tbody>`;
   }
-
-  const counts = { trabajado_dia: 0, trabajado_noche: 0, compensado: 0, incapacidad: 0 };
-  rows.forEach(r => { if (counts[r.tipo] !== undefined) counts[r.tipo]++; });
-  const total = counts.trabajado_dia + counts.trabajado_noche + counts.compensado + counts.incapacidad;
-  document.getElementById('previewSummary').innerHTML = `
-    <div class="sum-card"><div class="sum-label">Trab. Día ☀</div><div class="sum-val" style="color:#27500A">${counts.trabajado_dia}</div></div>
-    <div class="sum-card"><div class="sum-label">Trab. Noche 🌙</div><div class="sum-val" style="color:#7A4A00">${counts.trabajado_noche}</div></div>
-    <div class="sum-card"><div class="sum-label">Compensados</div><div class="sum-val" style="color:#0C447C">${counts.compensado}</div></div>
-    <div class="sum-card"><div class="sum-label">Incapacidades</div><div class="sum-val" style="color:#791F1F">${counts.incapacidad}</div></div>
-    <div class="sum-card"><div class="sum-label">Total</div><div class="sum-val">${total}</div></div>
-  `;
-
-  document.getElementById('previewArea').style.display = 'block';
-  document.getElementById('previewArea').scrollIntoView({ behavior: 'smooth' });
-}
-
-// Copy button
-document.getElementById('copyBtn').addEventListener('click', () => {
-  const titleEl = document.getElementById('previewTitle').textContent;
-  const subEl = document.getElementById('previewSub').textContent;
-  const rows = [];
-  document.querySelectorAll('#previewTable tbody tr').forEach(tr => {
-    const cells = tr.querySelectorAll('td');
-    if (cells.length === 3) rows.push(`${cells[0].textContent}\t${cells[1].textContent}\t${cells[2].textContent}`);
-  });
-  const summary = [];
-  document.querySelectorAll('#previewSummary .sum-card').forEach(c => {
-    summary.push(`${c.querySelector('.sum-label').textContent}: ${c.querySelector('.sum-val').textContent}`);
-  });
-  const text = [titleEl, subEl, '', 'Fecha\tDía\tTipo', ...rows, '', summary.join('  |  ')].join('\n');
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copyBtn');
-    btn.textContent = '¡Copiado!';
-    setTimeout(() => btn.textContent = 'Copiar texto', 2000);
-  });
+  const c={trabajado_dia:0,trabajado_noche:0,compensado:0,incapacidad:0}; rows.forEach(r=>{ if(c[r.tipo]!==undefined) c[r.tipo]++; });
+  const total=c.trabajado_dia+c.trabajado_noche+c.compensado+c.incapacidad;
+  document.getElementById('previewSummary').innerHTML=`
+    <div class="sum-card"><div class="sum-label">Trab. Día ☀</div><div class="sum-val" style="color:#27500A">${c.trabajado_dia}</div></div>
+    <div class="sum-card"><div class="sum-label">Trab. Noche 🌙</div><div class="sum-val" style="color:#7A4A00">${c.trabajado_noche}</div></div>
+    <div class="sum-card"><div class="sum-label">Compensados</div><div class="sum-val" style="color:#0C447C">${c.compensado}</div></div>
+    <div class="sum-card"><div class="sum-label">Incapacidades</div><div class="sum-val" style="color:#791F1F">${c.incapacidad}</div></div>
+    <div class="sum-card"><div class="sum-label">Total</div><div class="sum-val">${total}</div></div>`;
+  document.getElementById('previewArea').style.display='block';
+  document.getElementById('previewArea').scrollIntoView({behavior:'smooth'});
 });
 
-document.getElementById('closePreviewBtn').addEventListener('click', () => {
-  document.getElementById('previewArea').style.display = 'none';
-});
-
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.getElementById('modalCancel').addEventListener('click', () => closeModal('dayModal'));
-['dayModal','exportModal','passModal'].forEach(id => {
-  document.getElementById(id).addEventListener('click', e => {
-    if (e.target === document.getElementById(id)) {
-      if (id === 'passModal') { pendingAction = null; }
-      closeModal(id);
-    }
+document.getElementById('copyBtn').addEventListener('click',()=>{
+  const title=document.getElementById('previewTitle').textContent;
+  const sub=document.getElementById('previewSub').textContent;
+  const rows=[]; document.querySelectorAll('#previewTable tbody tr').forEach(tr=>{ const c=tr.querySelectorAll('td'); if(c.length===3) rows.push(`${c[0].textContent}\t${c[1].textContent}\t${c[2].textContent}`); });
+  const sum=[]; document.querySelectorAll('#previewSummary .sum-card').forEach(c=>sum.push(`${c.querySelector('.sum-label').textContent}: ${c.querySelector('.sum-val').textContent}`));
+  navigator.clipboard.writeText([title,sub,'','Fecha\tDía\tTipo',...rows,'',sum.join('  |  ')].join('\n')).then(()=>{
+    const btn=document.getElementById('copyBtn'); btn.textContent='¡Copiado!'; setTimeout(()=>btn.textContent='Copiar texto',2000);
   });
 });
+document.getElementById('closePreviewBtn').addEventListener('click',()=>{ document.getElementById('previewArea').style.display='none'; });
 
-document.getElementById('empSelect').addEventListener('change', e => { currentEmp = e.target.value; render(); });
-document.getElementById('yearInput').addEventListener('change', e => { currentYear = parseInt(e.target.value)||2025; render(); });
-document.getElementById('groupFilter').addEventListener('click', e => {
-  const btn = e.target.closest('[data-group]');
-  if (!btn) return;
-  groupFilter = btn.dataset.group;
-  document.querySelectorAll('#groupFilter .btn').forEach(b => b.classList.toggle('active', b === btn));
+// ── Modal helpers ──────────────────────────────────────────────
+const openModal  = id => document.getElementById(id).classList.add('open');
+const closeModal = id => document.getElementById(id).classList.remove('open');
+document.getElementById('modalCancel').addEventListener('click',()=>closeModal('dayModal'));
+['dayModal','exportModal'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{ if(e.target===document.getElementById(id)) closeModal(id); }); });
+document.getElementById('empSelect').addEventListener('change',e=>{ currentEmp=e.target.value; render(); });
+document.getElementById('yearInput').addEventListener('change',e=>{ currentYear=parseInt(e.target.value)||2025; render(); });
+document.getElementById('groupFilter').addEventListener('click',e=>{
+  const btn=e.target.closest('[data-group]'); if(!btn) return;
+  groupFilter=btn.dataset.group;
+  document.querySelectorAll('#groupFilter .btn').forEach(b=>b.classList.toggle('active',b===btn));
   render();
 });
 
-updateLockUI();
+// ── Turno generator ────────────────────────────────────────────
+function buildTurnoEmpSelect() {
+  const sel = document.getElementById('turnoEmp');
+  sel.innerHTML = '';
+  EMPLOYEES.forEach(e => {
+    const o = document.createElement('option');
+    o.value = e.id; o.textContent = e.name + (e.rrhh?' ★':'');
+    if (e.id === currentEmp) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+document.getElementById('openTurnoBtn').addEventListener('click', () => {
+  buildTurnoEmpSelect();
+  const today = new Date();
+  document.getElementById('turnoFecha').value = today.toISOString().slice(0,10);
+  openModal('turnoModal');
+});
+document.getElementById('turnoCancel').addEventListener('click', () => closeModal('turnoModal'));
+document.getElementById('turnoModal').addEventListener('click', e => { if(e.target===document.getElementById('turnoModal')) closeModal('turnoModal'); });
+
+document.getElementById('turnoGenerate').addEventListener('click', async () => {
+  const empId    = document.getElementById('turnoEmp').value;
+  const fechaVal = document.getElementById('turnoFecha').value;
+  const overwrite= document.getElementById('turnoOverwrite').value === 'overwrite';
+  if (!fechaVal) { alert('Por favor selecciona una fecha de inicio.'); return; }
+
+  const cycle = [
+    ...Array(10).fill('trabajado_dia'),
+    ...Array(10).fill('trabajado_noche'),
+    ...Array(10).fill(null)
+  ];
+
+  closeModal('turnoModal');
+  setStatus('saving', 'Generando turno...');
+
+  const start = new Date(fechaVal + 'T00:00:00');
+  const writes = [];
+
+  for (let i = 0; i < 30; i++) {
+    const date = new Date(start);
+    date.setDate(start.getDate() + i);
+    const y = date.getFullYear();
+    const m = date.getMonth();
+    const d = date.getDate();
+    const existing = getDay(empId, y, m, d);
+    if (!overwrite && existing) continue;
+    writes.push({ key: dkey(empId, y, m, d), tipo: cycle[i] });
+  }
+
+  try {
+    for (const w of writes) {
+      await set(ref(db, `asistencia/${w.key}`), w.tipo || null);
+    }
+    setStatus('connected', `Turno generado — ${writes.length} días escritos ✓`);
+  } catch(e) {
+    setStatus('error', 'Error al generar turno');
+  }
+});
+
 render();
 </script>
-
-<style media="print">
-  .toolbar, .legend, .stats-bar, .export-btn, .export-actions-bar { display: none !important; }
-  body { padding: 12px; background: white; }
-  #yearGrid { display: none; }
-  #previewArea { display: block !important; border: none; padding: 0; }
-</style>
 </body>
 </html>
